@@ -1,6 +1,10 @@
 # login_signup
 
-A new Flutter project.
+A simple Login/Signup application for Android, made with Flutter and Firebase.
+
+1. Configure a Firebase project and link it to this project.
+2. Run ```flutter pub get```
+3. Run ```flutter run```
 
 ## Getting Started
 
