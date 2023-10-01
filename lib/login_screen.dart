@@ -62,26 +62,29 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (email != "" && password != "") {
                     try {
                       showCircularProgress(context);
-                      final user = await _auth.signInWithEmailAndPassword(
+                      await _auth.signInWithEmailAndPassword(
                           email: email, password: password);
-                      if (user != null) {
-                        // Destroying the circular progress indicator
-                        // if(context.mounted){Navigator pop} ?
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pushNamed('/homepage_screen');
+                      if (_auth.currentUser != null) {
+                        if (context.mounted) {
+                          // Destroying the circular progress indicator
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pushNamed('/homepage_screen');
+                        }
                       }
                     } catch (e) {
-                      Navigator.of(context).pop();
-                      // Remove firebase auth exception's codes from the string
-                      String alert =
-                          e.toString().replaceAll(RegExp(r'\[.*?\]'), '');
-                      if (alert.contains('An internal error has occurred.')) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            createSnackbar(
-                                'The email or password is incorrect'));
-                      } else {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(createSnackbar(alert));
+                      if (context.mounted) {
+                        Navigator.of(context).pop();
+                        // Remove firebase auth exception's codes from the string
+                        String alert =
+                            e.toString().replaceAll(RegExp(r'\[.*?\]'), '');
+                        if (alert.contains('An internal error has occurred.')) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              createSnackbar(
+                                  'The email or password is incorrect'));
+                        } else {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(createSnackbar(alert));
+                        }
                       }
                     }
                   } else {

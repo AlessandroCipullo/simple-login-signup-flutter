@@ -60,23 +60,25 @@ class _SignupScreenState extends State<SignupScreen> {
                   if (email != "" && password != "") {
                     try {
                       showCircularProgress(context);
-                      final newUser =
-                          await _auth.createUserWithEmailAndPassword(
-                              email: email, password: password);
-                      if (newUser != null) {
-                        // Destroying the circular progress indicator
-                        // if(context.mounted){Navigator pop} ?
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pushNamed('/homepage_screen');
+                      await _auth.createUserWithEmailAndPassword(
+                          email: email, password: password);
+                      if (_auth.currentUser != null) {
+                        if (context.mounted) {
+                          // Destroying the circular progress indicator
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pushNamed('/homepage_screen');
+                        }
                       }
                     } catch (e) {
-                      Navigator.of(context).pop();
-                      // Remove firebase auth exception's codes from the string
-                      String alert =
-                          e.toString().replaceAll(RegExp(r'\[.*?\]'), '');
+                      if (context.mounted) {
+                        Navigator.of(context).pop();
+                        // Remove firebase auth exception's codes from the string
+                        String alert =
+                            e.toString().replaceAll(RegExp(r'\[.*?\]'), '');
 
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(createSnackbar(alert));
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(createSnackbar(alert));
+                      }
                     }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(

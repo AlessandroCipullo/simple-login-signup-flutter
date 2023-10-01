@@ -59,8 +59,9 @@ class _HomepageScreenState extends State<HomepageScreen> {
               ElevatedButton(
                   onPressed: (() async {
                     await _auth.signOut();
-                    // if(context.mounted){Navigator pop} ?
-                    Navigator.of(context).pushReplacementNamed('/');
+                    if (context.mounted) {
+                      Navigator.of(context).pushReplacementNamed('/');
+                    }
                   }),
                   style: ElevatedButton.styleFrom(
                       fixedSize: Size(getProportionateScreenWidth(130),

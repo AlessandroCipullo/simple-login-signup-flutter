@@ -11,9 +11,10 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
+  final _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
-    final _auth = FirebaseAuth.instance;
     // Move it outside of the build fun
     SizeConfig().init(context);
 
