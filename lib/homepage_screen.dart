@@ -1,11 +1,8 @@
-import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:login_signup/auth_methods.dart';
 import 'package:login_signup/size_config.dart';
 // import google fonts
-
-late User loggedInUser;
 
 class HomepageScreen extends StatefulWidget {
   const HomepageScreen({super.key, required this.msg});
@@ -16,23 +13,14 @@ class HomepageScreen extends StatefulWidget {
 }
 
 class _HomepageScreenState extends State<HomepageScreen> {
-  final _auth = FirebaseAuth.instance;
+  late User? loggedInUser;
+  String email = "";
 
   @override
   void initState() {
-    getCurrentUser();
+    loggedInUser = AuthMethods().getCurrentUser();
+    email = loggedInUser?.email ?? "Guest";
     super.initState();
-  }
-
-  void getCurrentUser() async {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        loggedInUser = user;
-      }
-    } catch (e) {
-      log(e.toString());
-    }
   }
 
   @override
@@ -50,7 +38,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                '${widget.msg} ${loggedInUser.email}',
+                '${widget.msg} $email',
                 style: const TextStyle(
                   fontSize: 22,
                 ),
@@ -58,7 +46,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
               const SizedBox(height: 15),
               ElevatedButton(
                   onPressed: (() async {
-                    await _auth.signOut();
+                    await AuthMethods().logOut();
                     if (context.mounted) {
                       Navigator.of(context).pushReplacementNamed('/');
                     }

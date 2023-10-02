@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:login_signup/auth_methods.dart';
 import 'package:login_signup/homepage_screen.dart';
 import 'package:login_signup/size_config.dart';
 
@@ -11,14 +11,12 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  final _auth = FirebaseAuth.instance;
-
   @override
   Widget build(BuildContext context) {
     // Move it outside of the build fun
     SizeConfig().init(context);
 
-    if (_auth.currentUser != null) {
+    if (AuthMethods().getCurrentUser() != null) {
       return const HomepageScreen(msg: 'Welcome back');
     }
     return Scaffold(

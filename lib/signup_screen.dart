@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:login_signup/auth_methods.dart';
 import 'package:login_signup/size_config.dart';
 
 const InputDecoration _inputDecoration = InputDecoration(
@@ -16,7 +16,7 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  final _auth = FirebaseAuth.instance;
+  // Use text controllers maybe
   String email = "";
   String password = "";
 
@@ -57,32 +57,21 @@ class _SignupScreenState extends State<SignupScreen> {
                   vertical: getProportionateScreenWidth(32)),
               child: ElevatedButton(
                 onPressed: () async {
-                  if (email != "" && password != "") {
-                    try {
-                      showCircularProgress(context);
-                      await _auth.createUserWithEmailAndPassword(
-                          email: email, password: password);
-                      if (_auth.currentUser != null) {
-                        if (context.mounted) {
-                          // Destroying the circular progress indicator
-                          Navigator.of(context).pop();
-                          Navigator.of(context).pushNamed('/homepage_screen');
-                        }
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        Navigator.of(context).pop();
-                        // Remove firebase auth exception's codes from the string
-                        String alert =
-                            e.toString().replaceAll(RegExp(r'\[.*?\]'), '');
-
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(createSnackbar(alert));
-                      }
+                  showCircularProgress(context);
+                  String result = await AuthMethods()
+                      .signUp(email: email, password: password);
+                  if (result == 'Ok') {
+                    if (context.mounted) {
+                      // Destroying the circular progress indicator
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pushNamed('/homepage_screen');
                     }
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        createSnackbar('All fields are required.'));
+                    if (context.mounted) {
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(createSnackbar(result));
+                    }
                   }
                 },
                 style: ElevatedButton.styleFrom(

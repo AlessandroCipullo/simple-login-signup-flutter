@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:login_signup/auth_methods.dart';
 import 'package:login_signup/size_config.dart';
 
 // Write it once
@@ -17,7 +17,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _auth = FirebaseAuth.instance;
   // Use text controllers maybe
   String email = "";
   String password = "";
@@ -59,37 +58,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   vertical: getProportionateScreenWidth(32)),
               child: ElevatedButton(
                 onPressed: () async {
-                  if (email != "" && password != "") {
-                    try {
-                      showCircularProgress(context);
-                      await _auth.signInWithEmailAndPassword(
-                          email: email, password: password);
-                      if (_auth.currentUser != null) {
-                        if (context.mounted) {
-                          // Destroying the circular progress indicator
-                          Navigator.of(context).pop();
-                          Navigator.of(context).pushNamed('/homepage_screen');
-                        }
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        Navigator.of(context).pop();
-                        // Remove firebase auth exception's codes from the string
-                        String alert =
-                            e.toString().replaceAll(RegExp(r'\[.*?\]'), '');
-                        if (alert.contains('An internal error has occurred.')) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              createSnackbar(
-                                  'The email or password is incorrect'));
-                        } else {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(createSnackbar(alert));
-                        }
-                      }
+                  showCircularProgress(context);
+                  String result = await AuthMethods()
+                      .signIn(email: email, password: password);
+                  if (result == 'Ok') {
+                    if (context.mounted) {
+                      // Destroying the circular progress indicator
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pushNamed('/homepage_screen');
                     }
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        createSnackbar('All fields are required.'));
+                    if (context.mounted) {
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(createSnackbar(result));
+                    }
                   }
                 },
                 style: ElevatedButton.styleFrom(
