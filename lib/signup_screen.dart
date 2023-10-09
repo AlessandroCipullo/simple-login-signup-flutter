@@ -19,6 +19,8 @@ class _SignupScreenState extends State<SignupScreen> {
   // Use text controllers maybe
   String email = "";
   String password = "";
+  String name = "";
+  String surname = "";
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +31,27 @@ class _SignupScreenState extends State<SignupScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: getProportionateScreenWidth(28)),
+                child: TextField(
+                  onChanged: (value) {
+                    name = value;
+                  },
+                  decoration:
+                      _inputDecoration.copyWith(hintText: 'Enter your name'),
+                )),
+            Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: getProportionateScreenWidth(28),
+                    vertical: getProportionateScreenHeight(20)),
+                child: TextField(
+                  onChanged: (value) {
+                    surname = value;
+                  },
+                  decoration:
+                      _inputDecoration.copyWith(hintText: 'Enter your surname'),
+                )),
             Padding(
                 padding: EdgeInsets.symmetric(
                     horizontal: getProportionateScreenWidth(28)),
@@ -54,12 +77,15 @@ class _SignupScreenState extends State<SignupScreen> {
             Padding(
               padding: EdgeInsets.symmetric(
                   horizontal: getProportionateScreenWidth(28),
-                  vertical: getProportionateScreenWidth(32)),
+                  vertical: getProportionateScreenWidth(5)),
               child: ElevatedButton(
                 onPressed: () async {
                   showCircularProgress(context);
-                  String result = await AuthMethods()
-                      .signUp(email: email, password: password);
+                  String result = await AuthMethods().signUp(
+                      email: email,
+                      password: password,
+                      name: name,
+                      surname: surname);
                   if (result == 'Ok') {
                     if (context.mounted) {
                       // Destroying the circular progress indicator

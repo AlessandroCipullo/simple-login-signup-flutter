@@ -1,17 +1,36 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:login_signup/user_model.dart';
 
 class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<String> signUp(
-      {required String email, required String password}) async {
+      {required String email,
+      required String password,
+      required String name,
+      required String surname}) async {
     String result = 'Some error occured.';
 
-    if (email.isNotEmpty && password.isNotEmpty) {
+    if (email.isNotEmpty &&
+        password.isNotEmpty &&
+        name.isNotEmpty &&
+        surname.isNotEmpty) {
       try {
         UserCredential userCredential = await _auth
             .createUserWithEmailAndPassword(email: email, password: password);
         if (userCredential.user != null) {
+          UserModel userModel = UserModel(
+              email: email,
+              name: name,
+              surname: surname,
+              uid: userCredential.user!.uid);
+
+          await _firestore
+              .collection('Utenti')
+              .doc(userCredential.user!.uid)
+              .set(userModel.toJson());
           result = 'Ok';
         }
       } catch (e) {
@@ -50,6 +69,13 @@ class AuthMethods {
 
   User? getCurrentUser() {
     return _auth.currentUser;
+  }
+
+  Future<UserModel?> getCurrentUserData() async {
+    return UserModel.fromSnap(await _firestore
+        .collection('Utenti')
+        .doc(_auth.currentUser?.uid)
+        .get());
   }
 
   Future<void> logOut() async {
